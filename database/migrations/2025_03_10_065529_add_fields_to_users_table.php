@@ -14,8 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('user'); // Vai trò: user/admin
-            $table->boolean('is_admin')->default(false); // Phân quyền admin
+            if (!Schema::hasColumn('users', 'role')) {
+                $table->string('role')->default('user');
+            }
+            if (!Schema::hasColumn('users', 'is_admin')) {
+                $table->boolean('is_admin')->default(0);
+            }
         });
     }
 
