@@ -52,6 +52,7 @@ class UserController extends Controller
         }
         $user->name = $request->input('name', $user->name);
         $user->email = $request->input('email', $user->email);
+        $user->phone = $request->input('phone', $user->phone);
         return response()->json(['message' => 'Profile updated successfully!', 'user' => $user]);
     }
 
@@ -70,6 +71,6 @@ class UserController extends Controller
             'new_password' => 'required|min:6|confirmed',
         ]);
         // kiem tra mat khau hien tai co dung khong
-        
+
     }
 }
