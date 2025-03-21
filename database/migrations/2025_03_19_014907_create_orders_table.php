@@ -13,23 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->string('image')->nullable();
-            $table->integer('stock')->default(0);
-            $table->unsignedBigInteger('category_id')->nullable();
-
             $table->timestamps();
+            $table->text('description')->nullable();
+            $table->decimal('total', 10, 2);
+            $table->string('image')->nullable();
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
 
             // Nếu có bảng categories, thêm khóa ngoại
-            $table->foreign('category_id')
-                ->references('id')
-                ->on('categories')
-                ->onDelete('set null');
-            // $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -40,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('orders');
     }
 };

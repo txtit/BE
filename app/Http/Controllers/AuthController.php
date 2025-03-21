@@ -7,8 +7,10 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -68,16 +70,49 @@ class AuthController extends Controller
         }
     }
     // quen mat khau
+    // public function forgotPassword(Request $request)
+    // {
+    //     // kiem tra email co ton tai hay khong
+    //     $request->validate(['email' => 'required|email|exists:users,email']);
+    //     // gui email dat lai mat khau
+    //     $status = Password::sendResetLink($request->only('email'));
+
+    //     return $status === Password::RESET_LINK_SENT
+    //         ? response()->json(['message' => 'Đã gửi email dặt lại mật khẩu!'])
+    //         : response()->json(['error' => 'Gửi email thất bại!'], 500);
+    // }
+
     public function forgotPassword(Request $request)
     {
-        // kiem tra email co ton tai hay khong
-        $request->validate(['email' => 'required|email|exists:users,email']);
-        // gui email dat lai mat khau
-        $status = Password::sendResetLink($request->only('email'));
+        try {
+            // Validate email
+            $request->validate([
+                'email' => 'required|email|exists:users,email',
+            ], [
+                'email.exists' => 'Email không tồn tại trong hệ thống.',
+            ]);
 
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['message' => 'Đã gửi email dặt lại mật khẩu!'])
-            : response()->json(['error' => 'Gửi email thất bại!'], 500);
+            // Gửi email đặt lại mật khẩu
+            $status = Password::sendResetLink($request->only('email'));
+
+            // Kiểm tra trạng thái gửi email
+            if ($status === Password::RESET_LINK_SENT) {
+                return response()->json(['message' => 'Đã gửi email đặt lại mật khẩu!'], 200);
+            } else {
+                Log::error('Lỗi khi gửi email đặt lại mật khẩu:', ['status' => $status]);
+                return response()->json(['error' => 'Gửi email thất bại!'], 500);
+            }
+        } catch (ValidationException $e) {
+            // Bắt lỗi validation
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            // Bắt lỗi tổng quát
+            Log::error('Lỗi trong quá trình xử lý quên mật khẩu:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Có lỗi xảy ra. Vui lòng thử lại sau.'], 500);
+        }
     }
 
     // dat lai mat khau
@@ -118,6 +153,7 @@ class AuthController extends Controller
         return response()->json([
             'role' => auth()->user()->role,
             'name' => auth()->user()->name,
+            'id' => Auth::user()->id,
             'access_token' => $token,
             'token_type' => 'bearer',
             // 'expires_in' => auth()->factory()->getTTL() * 60

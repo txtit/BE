@@ -11,8 +11,8 @@ class CategoryController extends Controller
     // Lấy danh sách sản phẩm
     public function index()
     {
-        $products = Category::all();
-        return response()->json($products);
+        $categories = Category::all();
+        return response()->json($categories);
     }
 
     // Thêm sản phẩm mới
@@ -23,33 +23,33 @@ class CategoryController extends Controller
             'description' => 'string'
         ]);
 
-        $product = Category::create($request->all());
+        $category = Category::create($request->all());
 
-        return response()->json($product, 201);
+        return response()->json($category, 201);
     }
 
     // Hiển thị chi tiết sản phẩm
     public function show($id)
     {
-        $product = Category::findOrFail($id);
-        return response()->json($product);
+        $category = Category::findOrFail($id);
+        return response()->json($category);
     }
 
     // Cập nhật sản phẩm
     public function update(Request $request, $id)
     {
-        $product = Category::findOrFail($id);
-        $product->update($request->all());
+        $category = Category::findOrFail($id);
+        $category->update($request->all());
 
-        return response()->json($product);
+        return response()->json($category);
     }
 
     // Xóa sản phẩm
     public function destroy($id)
     {
-        $product = Category::findOrFail($id);
-        $product->delete();
+        $category = Category::findOrFail($id);
+        $category->delete();
 
-        return response()->json(['message' => 'Product deleted']);
+        return response()->json(['message' => 'Category deleted']);
     }
 }

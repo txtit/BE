@@ -10,7 +10,6 @@ class Category extends Model
     use HasFactory;
 
     //
-    use HasFactory;
 
     protected $fillable = ['name', 'description']; // Cho phép gán nhanh
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -17,6 +18,12 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('order', [OrderController::class, 'index']);
+Route::post('/order', [OrderController::class, 'store']);
+Route::get('order/{id}', [OrderController::class, 'getOrderDetail']);
+Route::get('productNear/{id}', [OrderController::class, 'getLatestUserOrderProducts']);
+Route::delete('order/{id}', [OrderController::class, 'destroy']);
 
 Route::get('category', [CategoryController::class, 'index']);
 Route::post('category', [CategoryController::class, 'store']);
@@ -56,10 +63,6 @@ Route::middleware(['auth:api'])->group(function () {
     // Route::middleware(['admin'])->group(function () {
 
     // });
-
-
-
-
     // API cho User
     Route::get('/me', [UserController::class, 'me']);
     Route::put('/me', [UserController::class, 'updateMe']);

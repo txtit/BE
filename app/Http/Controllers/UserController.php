@@ -44,15 +44,39 @@ class UserController extends Controller
         return response()->json(Auth::user());
     }
     // api cap nhat thong tin user dang dang nhap (User)
+    // public function updateMe(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     if (!$user) {
+    //         return response()->json(['message' => 'User not found'], 404);
+    //     }
+    //     $user->name = $request->input('name', $user->name);
+    //     $user->email = $request->input('email', $user->email);
+    //     $user->role = $request->input('role', $user->role);
+    //     // Lưu thay đổi vào database
+    //     $user->save();
+    //     return response()->json(['message' => 'Profile updated successfully!', 'user' => $user]);
+    // }
+
     public function updateMe(Request $request)
     {
         $user = Auth::user();
+
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-        $user->name = $request->input('name', $user->name);
-        $user->email = $request->input('email', $user->email);
-        $user->phone = $request->input('phone', $user->phone);
+
+        // Cách 1: Cập nhật bằng từng thuộc tính
+        // $user->name = $request->input('name', $user->name);
+        // $user->email = $request->input('email', $user->email);
+        // $user->role = $request->input('role', $user->role);
+        // $user->save();
+
+        // Hoặc Cách 2: Cập nhật bằng `update()`
+        if ($user instanceof \Illuminate\Database\Eloquent\Model) {
+            $user->update($request->only(['name', 'email', 'role']));
+        }
+
         return response()->json(['message' => 'Profile updated successfully!', 'user' => $user]);
     }
 
